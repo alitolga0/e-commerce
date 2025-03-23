@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-     
-    <router-view /> <!-- Ana sayfa için yönlendirme alanı -->
+    <router-view /> 
   </div>
 </template>
 
