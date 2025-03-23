@@ -27,7 +27,7 @@
 
        
         <ul class="navbar-links" :class="{ 'active': isMenuOpen }">
-          <li><router-link to="/home">Ana Sayfa</router-link></li>
+          <li><router-link to="/">Ana Sayfa</router-link></li>
           <li><router-link to="/products">Ürünler</router-link></li>
           <li><router-link to="/cart">Sepet</router-link></li>
           <li><router-link to="/categories">Kategoriler</router-link></li>

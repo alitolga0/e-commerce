@@ -6,7 +6,7 @@
           <h2>Giriş Yap</h2>
           <input type="email" placeholder="E-posta" v-model="email" required />
           <input type="password" placeholder="Şifre" v-model="password" required />
-          <router-link to="/home">
+          <router-link to="/">
             <button type="button">Giriş Yap</button>
           </router-link>
         </form>
