@@ -3,7 +3,6 @@ import HomePage from '../views/HomePage.vue';
 import ProductsPage from '../views/ProductsPage.vue';
 import CartPage from '../views/CartPage.vue';
 import AccountPage from '../views/AccountPage.vue';
-import CategoriesPage from '../views/CategoriesPage.vue';
 import LoginPage from '../views/LoginPage.vue';  
 
 const routes = [
@@ -27,11 +26,7 @@ const routes = [
     name: 'AccountPage',
     component: AccountPage
   },
-  {
-    path: '/categories',
-    name: 'CategoriesPage',
-    component: CategoriesPage
-  },
+  
   {
     path: '/login',
     name: 'LoginPage',  

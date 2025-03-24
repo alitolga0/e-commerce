@@ -6,12 +6,13 @@
         <homeSlider />
       </div>
       <div  >
-        <h2>Size Önerilerimiz</h2>
         <div class="slider">
         <div >
+          <h2>En Çok Satanlar</h2>
           <SalesCart />
         </div>
         <div >
+          <h2>En Favoriler</h2>
           <SalesCart />
         </div>
       </div>
@@ -54,6 +55,8 @@ h2{
     margin-top: 10px;
     font-size: 2rem;
     font-weight: bold;
+    color:#4caf50;
+
   }
 
 .home-content > div:first-child {

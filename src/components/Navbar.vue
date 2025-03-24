@@ -1,198 +1,207 @@
 <template>
-  <div>
-  
-    <nav class="navbar">
-      <div class="navbar-container">
-      
-        <div class="logo">
-          <h1>n22</h1>
-        </div>
-        
-        
-        <div class="search-container">
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Ürün ara..."
-            class="search-input"
-          />
-        </div>
-
-     
-        <div class="toggle-btn" @click="toggleMenu">
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-        </div>
-
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">
        
-        <ul class="navbar-links" :class="{ 'active': isMenuOpen }">
-          <li><router-link to="/">Ana Sayfa</router-link></li>
-          <li><router-link to="/products">Ürünler</router-link></li>
-          <li><router-link to="/cart">Sepet</router-link></li>
-          <li><router-link to="/categories">Kategoriler</router-link></li>
-          <li><router-link to="/account">Hesap</router-link></li>
-          <li><router-link to="/login">Giriş Yap</router-link></li>
-        </ul>
+          <h3 class="logo-text">n22</h3>
+   
       </div>
-    </nav>
-
-    
-    <div class="content">
-      <router-view></router-view>
+      <div class="search-bar">
+        <input type="text" placeholder="aradığınız ürün" />
+      </div>
+      <div class="icons">
+       
+        <router-link to="/" class="home-icon">
+          <i class="fas fa-home"></i>
+        </router-link>
+        <router-link to="/cart"><i class="fas fa-shopping-cart"></i></router-link>
+        <router-link to="/account"><i class="fas fa-user"></i></router-link>
+        <router-link to="/login"><i class="fas fa-sign-in-alt"></i></router-link>
+      
+        <button class="toggle-button" @click="toggleMenu">
+          <i :class="isMobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+        </button>
+      </div>
     </div>
-  </div>
+    <div v-if="isMobileMenuOpen" class="overlay" @click="toggleMenu"></div>
+    <ul :class="['nav-links', { 'mobile-menu': isMobileMenuOpen }]">
+      <li v-for="category in categories" :key="category">
+        <router-link to="/products" class="nav-link">{{ category }}</router-link>
+      </li>
+    </ul>
+  </nav>
 </template>
-
 <script>
 export default {
-name: "myNavbar",
-data() {
-  return {
-    isMenuOpen: false,
-    searchQuery: "",
-  };
-},
-methods: {
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
+  name: "myNavbar",
+  data() {
+    return {
+      isMobileMenuOpen: false,
+      categories: [
+        "Güzellik", "Parfümler", "Mobilya", "Gıda", "Ev Dekorasyonu", 
+  "Mutfak Aksesuarları", "Dizüstü Bilgisayarlar", " Gömlekler", " Ayakkabılar", " Saatler", "Mobil Aksesuarlar"
+      ]
+    };
   },
-  searchProduct() {
-    if (this.searchQuery) {
-      console.log("Arama yapılıyor:", this.searchQuery);
-    } else {
-      console.log("Lütfen aramak için bir kelime girin.");
+  methods: {
+    toggleMenu() {
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+      if (this.isMobileMenuOpen) {
+        document.body.style.overflow = "hidden"; 
+      } else {
+        document.body.style.overflow = "auto";
+      }
     }
-  },
-},
+  }
 };
 </script>
-
 <style scoped>
-body, html {
-margin: 0;
-padding: 0;
-width: 100%;
-height: 100%;
-overflow-x: hidden;
-}
-
 .navbar {
-background-color: #f7f7f7;
-padding: 20px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #45a049; 
+  color: #fff; 
+  padding: 15px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 100;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+.search-bar input {
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  width: 70%;
+}
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+a {
+  text-decoration: none;
+}
+.icons i {
+  font-size: 20px;
+  color: #fff; 
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.icons i:hover {
+  color: #45a049; 
 }
 
-.navbar-container {
-display: flex;
-justify-content: space-between;
-align-items: center;
-width: 100%;
+.toggle-button {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-.logo h1 {
-color: #0067b8;
-font-size: 24px;
-margin: 0;
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  padding: 10px 20px;
+  transition: all 0.3s ease-in-out;
 }
 
-.toggle-btn {
-display: none;
-cursor: pointer;
+.nav-links li {
+  padding: 15px;
+  border-radius: 5px;
+  transition: background 0.3s;
+  font-size: 18px;
+  text-align: center;
+  position: relative;
+}
+.nav-links li:hover {
+  background: rgba(69, 160, 73, 0.2);
 }
 
-.toggle-btn .bar {
-width: 25px;
-height: 3px;
-margin: 5px 0;
-background-color: #262626;
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.search-container {
-display: flex;
-align-items: center;
-flex-grow: 1;
-justify-content: center;
+.nav-link {
+  display: inline-block;
+  position: relative;
 }
 
-.search-input {
-padding: 8px;
-font-size: 18px;
-border: 1px solid #262626;
-border-radius: 4px;
-outline: none;
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #fff; 
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
 }
 
-.navbar-links {
-list-style-type: none;
-display: flex;
-margin: 0;
-padding: 0;
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
 
-.navbar-links li {
-margin: 0 20px;
+.logo {
+  color: #fff; 
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.navbar-links a {
-color: #262626;
-text-decoration: none;
-font-size: 18px;
-transition: color 0.3s;
-}
-
-.navbar-links a:hover {
-color: #0067b8;
+.home-icon i {
+  font-size: 20px;
+  color: #fff; 
 }
 
 @media (max-width: 768px) {
-.navbar-container {
-  flex-direction: row;
-  justify-content: space-between;
-}
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 5;
+  }
 
-.search-container {
-  width: 100%;
-  justify-content: center;
-}
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: #45a049; 
+    position: fixed;
+    width: 80%;
+    left: 10%;
+    top: 60px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    border-radius: 10px;
+  }
 
-.search-input {
-  width: 150px;
-  font-size: 14px;
-}
+  .mobile-menu {
+    display: flex;
+  }
 
-.toggle-btn {
-  display: block;
-  z-index: 10;
-}
+  .toggle-button {
+    display: block;
+  }
 
-.navbar-links {
-  position: fixed;
-  top: 0;
-  left: 100%;
-  width: 80%;
-  height: 100vh;
-  background-color: #f7f7f7;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
-  padding-left: 20px;
-  padding-top: 60px;
-}
-
-.navbar-links.active {
-  transform: translateX(-100%);
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .nav-links li {
+    margin-bottom: 10px;
+    padding: 20px;
+    font-size: 20px;
+  }
 }
 </style>
