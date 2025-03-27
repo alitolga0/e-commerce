@@ -1,149 +1,188 @@
 <template>
-  <section class="sales-cart">
-    <div class="sales-list">
-      <div v-for="sale in sales" :key="sale.id" class="sales-card">
-        <router-link :to="'/products'" class="product-link">
-          <img :src="sale.image" :alt="sale.name" class="sales-image" />
-          <div class="product-info">
-            <h3>{{ sale.name }}</h3>
-            <p class="price">{{ sale.pricename }} ₺</p>
-          </div>
-        </router-link>
-        <button @click="addToCart(sale)" class="add-to-cart-btn">
-          Sepete Ekle
+  <div class="products-page">
+    <h2>{{ selectedCategory ? selectedCategory : "Tüm Ürünler" }}</h2>
+
+    <div class="products-container">
+      <div
+        v-for="product in products"
+        :key="product.id"
+        class="product-card"
+      >
+        <img :src="product.image" :alt="product.title" />
+        <h3>{{ shortenTitle(product.title) }}</h3>
+        <p class="price">{{ product.price }} TL</p>
+        <button @click="addToCart(product)" class="add-to-cart-btn">
+          <font-awesome-icon :icon="['fas', 'shopping-cart']" />
         </button>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
+
 <script>
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core"; 
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons"; 
+
+
+library.add(faShoppingCart);
+
 export default {
-  name: 'ProductCart',
+  name: "ProductPageProduct",
+  components: {
+    FontAwesomeIcon,
+  },
+
   data() {
     return {
-      sales: [
-        { id: 1, name: 'Makine', image: require('@/assets/eşya.jpg'), pricename: "100" },
-        { id: 2, name: 'PC', image: require('@/assets/bilgisayar.jpg'), pricename: "2500" },
-        { id: 3, name: 'Tablet', image: require('@/assets/tablet.jpg'), pricename: "1500" },
-        { id: 4, name: 'Telefon', image: require('@/assets/telefon.jpg'), pricename: "2000" },
-        { id: 5, name: 'Makine', image: require('@/assets/eşya.jpg'), pricename: "300" },
-        { id: 6, name: 'PC', image: require('@/assets/bilgisayar.jpg'), pricename: "4000" },
-        { id: 7, name: 'Tablet', image: require('@/assets/tablet.jpg'), pricename: "1200" },
-        { id: 8, name: 'Telefon', image: require('@/assets/telefon.jpg'), pricename: "1800" },
-        { id: 9, name: 'Makine', image: require('@/assets/eşya.jpg'), pricename: "250" },
-        { id: 10, name: 'PC', image: require('@/assets/bilgisayar.jpg'), pricename: "3500" },
-        { id: 11, name: 'Tablet', image: require('@/assets/tablet.jpg'), pricename: "1400" },
-        { id: 12, name: 'Telefon', image: require('@/assets/telefon.jpg'), pricename: "2200" },
-        { id: 13, name: 'Makine', image: require('@/assets/eşya.jpg'), pricename: "900" },
-        { id: 14, name: 'PC', image: require('@/assets/bilgisayar.jpg'), pricename: "4800" },
-        { id: 15, name: 'Tablet', image: require('@/assets/tablet.jpg'), pricename: "1600" },
-        { id: 16, name: 'Telefon', image: require('@/assets/telefon.jpg'), pricename: "2100" },
-      ],
+      products: [],
+      selectedCategory: this.$route.query.category || null, // URL'den category alıyoruz
     };
   },
+
   methods: {
-    addToCart(product) {
-      alert(`${product.name} sepete eklendi!`);
+    
+    async fetchProducts() {
+      try {
+        let url = "https://fakestoreapi.com/products"; 
+        
+        if (this.selectedCategory) {
+          url = `https://fakestoreapi.com/products/category/${this.selectedCategory}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+        this.products = data;
+      } catch (error) {
+        console.error("Ürünler yüklenirken hata oluştu:", error);
+      }
     },
+
+    shortenTitle(title) {
+      // Uzun başlıkları kısaltmak için yardımcı fonksiyon
+      return title.length > 20 ? title.substring(0, 18) + "..." : title;
+    },
+
+   
+    addToCart(product) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      
+      const productIndex = cart.findIndex(item => item.id === product.id);
+      
+      if (productIndex === -1) {
+        cart.push({...product, quantity: 1});
+      } else {
+        cart[productIndex].quantity += 1;
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      console.log(`${product.title} sepete eklendi!`);
+    }
   },
+
+ 
+  watch: {
+    "$route.query.category"(newCategory) {
+      this.selectedCategory = newCategory;
+      this.fetchProducts();
+    }
+  },
+
+ 
+  mounted() {
+    this.fetchProducts();
+  }
 };
 </script>
 
+
+
 <style scoped>
-.sales-cart {
-  padding: 40px;
-  text-align: center;
-  
-}
-
-.sales-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  justify-content: center;
- 
-}
-
-.sales-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.products-page {
   padding: 20px;
   text-align: center;
-  transition: transform 0.3s ease;
 }
 
-.sales-card:hover {
-  transform: translateY(-10px);
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-.product-link {
-  text-decoration: none;
-  color: inherit;
+.products-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
 }
 
-.sales-image {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
+.product-card {
+  width: 220px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.product-info {
-  margin-top: 10px;
+.product-card:hover {
+  transform: translateY(-5px);
 }
 
-h3 {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin: 10px 0;
+.product-card img {
+  width: 100px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.product-card h3 {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
 }
 
 .price {
-  font-size: 1.1rem;
-  color: #333;
-  margin-top: 5px;
+  font-size: 18px;
   font-weight: bold;
+  color: #45a049;
+  margin-bottom: 10px;
 }
 
 .add-to-cart-btn {
   background-color: #45a049;
   color: white;
+  padding: 10px;
+  font-size: 1.5rem;
   border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 5px;
+  border-radius: 50%;
   cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
-  display: inline-block;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
 }
 
 .add-to-cart-btn:hover {
-  background-color: #38a134;
+  background-color: #368a3e;
+  transform: scale(1.05);
+}
+
+.add-to-cart-btn svg {
+  font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {
-  .sales-card {
-    padding: 15px;
+  .products-container {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .sales-image {
-    height: 120px;
-  }
-
-  .product-info {
-    margin-top: 5px;
-  }
-
-  .price {
-    font-size: 1rem;
-  }
-
-  h3 {
-    font-size: 1rem;
+  .product-card {
+    width: 90%;
   }
 }
 </style>

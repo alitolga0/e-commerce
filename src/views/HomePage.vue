@@ -13,7 +13,7 @@
         </div>
         <div >
           <h2>En Favoriler</h2>
-          <SalesCart />
+          <myFavorites />
         </div>
       </div>
       </div>
@@ -30,13 +30,14 @@ import myNavbar from '../components/Navbar.vue';
 import myFooter from '../components/Footer.vue';
 import homeSlider from '../components/HomeCircledSlider.vue';
 import SalesCart from '../components/HomeSalesCard.vue';
-
+import myFavorites from '../components/Favorites.vue';
 export default {
   components: {
     myNavbar,
     homeSlider,
     SalesCart,
     myFooter,
+    myFavorites
   },
 };
 </script>

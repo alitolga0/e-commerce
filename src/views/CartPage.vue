@@ -3,26 +3,34 @@
     <myNavbar />
     <div class="cart-container">
       <h1>Sepetim</h1>
-      <div class="cart-items">
-        <div class="cart-item" v-for="(item, index) in cart" :key="index">
-          <img :src="item.image" alt="Ürün Resmi" class="product-image" />
-          <div class="item-info">
-            <h3>{{ item.name }}</h3>
-            <p>Fiyat: {{ item.price }} TL</p>
-            <p>Adet: {{ item.quantity }}</p>
-          </div>
-          <div class="item-total">
-            <p><strong>Toplam: {{ item.price * item.quantity }} TL</strong></p>
+      <div v-if="cart.length > 0">
+        <div class="cart-items">
+          <div class="cart-item" v-for="(item, index) in cart" :key="index">
+            <img :src="item.image" alt="Ürün Resmi" class="product-image" />
+            <div class="item-info">
+              <h3>{{ item.name }}</h3>
+              <p>Fiyat: {{ item.price }} TL</p>
+              <div class="quantity-controls">
+                <button @click="decreaseQuantity(index)" class="quantity-btn">➖</button>
+                <span class="quantity">{{ item.quantity }}</span>
+                <button @click="increaseQuantity(index)" class="quantity-btn">➕</button>
+              </div>
+            </div>
+            <div class="item-total">
+              <p><strong>Toplam: {{ item.price * item.quantity }} TL</strong></p>
+            </div>
+            <button @click="removeFromCart(index)" class="remove-btn">🗑️ Sil</button>
           </div>
         </div>
+
+        <div class="cart-summary">
+          <p class="total-price">
+            <strong>Toplam Fiyat: {{ totalPrice }} TL</strong>
+          </p>
+          <button class="checkout-btn">Ödeme Yap</button>
+        </div>
       </div>
-     
-      <div class="cart-summary">
-        <p class="total-price">
-          <strong>Toplam Fiyat: {{ totalPrice }} TL</strong>
-        </p>
-        <button class="checkout-btn">Ödeme Yap</button>
-      </div>
+      <p v-else class="empty-cart">Sepetinizde ürün bulunmamaktadır.</p>
     </div>
   </div>
 </template>
@@ -33,31 +41,46 @@ import myNavbar from "../components/Navbar.vue";
 export default {
   components: {
     myNavbar,
- 
   },
   data() {
     return {
-      cart: [
-        {
-          name: "Ürün 1",
-          price: 100,
-          quantity: 1,
-          image: require("@/assets/tablet.jpg"),
-        },
-        {
-          name: "Ürün 2",
-          price: 150,
-          quantity: 2,
-          image: require("@/assets/telefon.jpg"),
-        },
-      ],
+      cart: [],
     };
   },
   computed: {
     totalPrice() {
-      
       return this.cart.reduce((total, item) => total + item.price * item.quantity, 0);
     },
+  },
+  methods: {
+    loadCart() {
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        this.cart = JSON.parse(storedCart);
+      }
+    },
+    saveCart() {
+      localStorage.setItem("cart", JSON.stringify(this.cart));
+    },
+    increaseQuantity(index) {
+      this.cart[index].quantity += 1;
+      this.saveCart();
+    },
+    decreaseQuantity(index) {
+      if (this.cart[index].quantity > 1) {
+        this.cart[index].quantity -= 1;
+      } else {
+        this.removeFromCart(index);
+      }
+      this.saveCart();
+    },
+    removeFromCart(index) {
+      this.cart.splice(index, 1);
+      this.saveCart();
+    },
+  },
+  mounted() {
+    this.loadCart();
   },
 };
 </script>
@@ -97,12 +120,14 @@ export default {
 }
 
 .product-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;  
   margin-right: 20px;
   border-radius: 8px;
+  background-color: white; 
 }
+
 
 .item-info {
   flex-grow: 1;
@@ -122,6 +147,32 @@ export default {
   font-size: 1.2rem;
   font-weight: bold;
   color: #4caf50;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.quantity-btn {
+  background-color: white;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.quantity-btn:hover {
+  background-color: white;
+}
+
+.quantity {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .cart-summary {
@@ -150,6 +201,27 @@ export default {
   background-color: #45a049;
 }
 
+.remove-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.remove-btn:hover {
+  background-color: #c0392b;
+}
+
+.empty-cart {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #888;
+  margin-top: 20px;
+}
+
 @media (max-width: 768px) {
   .cart-item {
     width: 100%;
@@ -157,8 +229,8 @@ export default {
   }
 
   .product-image {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
   }
 
   .item-info h3 {

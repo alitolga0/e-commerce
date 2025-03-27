@@ -39,6 +39,7 @@ export default {
     SwiperSlide,
     FontAwesomeIcon,
   },
+  name:"myFavorites",
   data() {
     return {
       slidesPerView: 5, 
@@ -53,7 +54,7 @@ export default {
       try {
         const response = await fetch("https://fakestoreapi.com/products");
         const data = await response.json();
-        this.sales = data;
+        this.sales = data.slice(+10);
       } catch (error) {
         console.error("Ürünler yüklenirken hata oluştu:", error);
       }
@@ -68,7 +69,7 @@ export default {
         if (this.swiperInstance) {
           this.swiperInstance.slideNext();
         }
-      }, 4000);
+      }, 3000);
     },
     stopAutoplay() {
       if (this.autoplayInterval) {

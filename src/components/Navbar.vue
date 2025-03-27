@@ -2,15 +2,12 @@
   <nav class="navbar">
     <div class="container">
       <div class="logo">
-       
-          <h3 class="logo-text">n22</h3>
-   
+        <h3 class="logo-text">n22</h3>
       </div>
       <div class="search-bar">
-        <input type="text" placeholder="aradığınız ürün" />
+        <input type="text" placeholder="Aradığınız ürün" />
       </div>
       <div class="icons">
-       
         <router-link to="/" class="home-icon">
           <i class="fas fa-home"></i>
         </router-link>
@@ -24,37 +21,47 @@
       </div>
     </div>
     <div v-if="isMobileMenuOpen" class="overlay" @click="toggleMenu"></div>
+    
     <ul :class="['nav-links', { 'mobile-menu': isMobileMenuOpen }]">
       <li v-for="category in categories" :key="category">
-        <router-link to="/products" class="nav-link">{{ category }}</router-link>
+        <router-link :to="{ path: '/products', query: { category: category } }" class="nav-link">
+          {{ category }}
+        </router-link>
       </li>
     </ul>
   </nav>
 </template>
+
 <script>
 export default {
   name: "myNavbar",
   data() {
     return {
       isMobileMenuOpen: false,
-      categories: [
-        "Güzellik", "Parfümler", "Mobilya", "Gıda", "Ev Dekorasyonu", 
-  "Mutfak Aksesuarları", "Dizüstü Bilgisayarlar", " Gömlekler", " Ayakkabılar", " Saatler", "Mobil Aksesuarlar"
-      ]
+      categories: [] 
     };
   },
   methods: {
     toggleMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
-      if (this.isMobileMenuOpen) {
-        document.body.style.overflow = "hidden"; 
-      } else {
-        document.body.style.overflow = "auto";
+      document.body.style.overflow = this.isMobileMenuOpen ? "hidden" : "auto";
+    },
+    async fetchCategories() {
+      try {
+        const response = await fetch("https://fakestoreapi.com/products/categories");
+        const data = await response.json();
+        this.categories = data;
+      } catch (error) {
+        console.error("Kategoriler yüklenirken hata oluştu:", error);
       }
     }
+  },
+  mounted() {
+    this.fetchCategories();
   }
 };
 </script>
+
 <style scoped>
 .navbar {
   background-color: #45a049; 
